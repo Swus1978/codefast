@@ -1,5 +1,6 @@
 
 import ButtonLogin from "@/components/ButtonLogin";
+import FAQListitem from "@/components/FAQListitem";
 
 export default function Home() {
   const isLoggedIn = true;
@@ -16,8 +17,8 @@ export default function Home() {
         <div className=" max-w-3xl mx-auto flex justify-between items-center px-8 py-2">
           <div className="font-bold">CodeFastSaas</div>
           <div className="space-x-4 max-md:hidden">
-            <a className="link link-hover">Pricing</a>
-            <a className="link link-hover">FAQ</a>
+            <a className="link link-hover" href="#pricing">Pricing</a>
+            <a className="link link-hover" href="#faq">FAQ</a>
           </div>
           <div>
             <ButtonLogin isLoggedIn={isLoggedIn} name={name} />
@@ -36,7 +37,7 @@ export default function Home() {
         <ButtonLogin isLoggedIn={isLoggedIn} name={name} />
       </section>
       {/* PRICING */}
-      <section className="bg-base-200">
+      <section id="pricing" className="bg-base-200">
         <div className="py-32 px-8 max-w-3xl mx-auto">
           <p className="text-sm uppercase font-medium text-center text-primary mb-4">Pricing</p>
           <h2 className="text-3xl lg:text-4xl font-extrabold mb-12 text-center">
@@ -84,7 +85,7 @@ export default function Home() {
 
       </section>
       { /*  FAQ */}
-      <section className="bg-base-200">
+      <section id="faq" className="bg-base-200">
         <div className="py-32 px-8 max-w-3xl mx-auto">
           <p className="text-sm uppercase font-medium text-center text-primary mb-4">
             FAQ
@@ -93,7 +94,7 @@ export default function Home() {
           <h2 className="text-3xl lg:text-4xl font-extrabold mb-12 text-center">
             Frequetly Asked Questions
           </h2>
-          <ul>
+          <ul className="max-w-lg-mx-auto">
           {
             [
               {question: "What do I get exactly?", 
@@ -106,15 +107,9 @@ export default function Home() {
                answer: "Lorem Ipseum"
               },
             ].map((qa) => (
-              <li key={qa.question} className="mb-6">
-                {qa.question}
-                <button onClick={()=>{}}>{qa.question}</button>
-
-                <div>
-                  {qa.answer}
-                </div>
-            
-              </li>
+              
+              <FAQListitem key={qa.question} qa={qa} />
+             
             ))
           }
           </ul>
