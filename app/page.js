@@ -1,26 +1,31 @@
 
- import ButtonLogin from "@/components/ButtonLogin"; 
+import ButtonLogin from "@/components/ButtonLogin";
 
 export default function Home() {
   const isLoggedIn = true;
   const name = "Juan";
 
+
+  
+
   return (
     <main>
+
+      {/*HEADER*/}
       <section className="bg-base-200">
-      <div className=" max-w-3xl mx-auto flex justify-between items-center px-8 py-2">
-        <div className="font-bold">CodeFastSaas</div>
-        <div className="space-x-4 max-md:hidden">
-          <a className="link link-hover">Pricing</a>
-          <a className="link link-hover">FAQ</a>
+        <div className=" max-w-3xl mx-auto flex justify-between items-center px-8 py-2">
+          <div className="font-bold">CodeFastSaas</div>
+          <div className="space-x-4 max-md:hidden">
+            <a className="link link-hover">Pricing</a>
+            <a className="link link-hover">FAQ</a>
+          </div>
+          <div>
+            <ButtonLogin isLoggedIn={isLoggedIn} name={name} />
+          </div>
         </div>
-        <div>
-          <ButtonLogin isLoggedIn={isLoggedIn} name={name} />
-        </div>
-      </div>
       </section>
-     
-      <section className="text-center py-32 px-8 max-w-3xl mx-auto">
+      {/*  HERO */}
+      <section className="bg-base-100 text-center py-32 px-8 max-w-3xl mx-auto">
         <h1 className="text-4xl lg:text-5xl font-extrabold mb-6">
           Collect customer feedback to build better products
         </h1>
@@ -29,6 +34,91 @@ export default function Home() {
           products your customers will love.
         </div>
         <ButtonLogin isLoggedIn={isLoggedIn} name={name} />
+      </section>
+      {/* PRICING */}
+      <section className="bg-base-200">
+        <div className="py-32 px-8 max-w-3xl mx-auto">
+          <p className="text-sm uppercase font-medium text-center text-primary mb-4">Pricing</p>
+          <h2 className="text-3xl lg:text-4xl font-extrabold mb-12 text-center">
+            A pricing that adapts to your needs
+          </h2>
+
+          <div className="p-8 bg-base-100 max-w-96 rounded-3xl mx-auto space-y-6">
+            <div className="flex gap-2 items-baseline">
+              <div className="text-4xl font-black">$19</div>
+              <div className="uppercase text-sm font-medium opacity-60">/month</div>
+            </div>
+
+            <ul className="space-y-2">
+              {[
+                  "Collect customer feedback",
+                  "Unlimited boards",
+                  "Admin dashboard",
+                  "24/7 support",
+                ].map((priceItem) => (
+                  <li key={priceItem} className="flex gap-2 items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-6 w-6 text-primary"
+                      fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {priceItem}
+                  </li>
+                ))
+              }
+            </ul>
+            <ButtonLogin
+              isLoggedIn={isLoggedIn}
+              name={name}
+              extraStyle="w-full"
+            />
+          </div>
+        </div>
+
+      </section>
+      { /*  FAQ */}
+      <section className="bg-base-200">
+        <div className="py-32 px-8 max-w-3xl mx-auto">
+          <p className="text-sm uppercase font-medium text-center text-primary mb-4">
+            FAQ
+          </p>
+
+          <h2 className="text-3xl lg:text-4xl font-extrabold mb-12 text-center">
+            Frequetly Asked Questions
+          </h2>
+          <ul>
+          {
+            [
+              {question: "What do I get exactly?", 
+               answer: "Lorem Ipseum"
+              },
+              {question: "Can I get a refund?", 
+               answer: "Lorem Ipseum"
+              },
+              {question: "I have another question", 
+               answer: "Lorem Ipseum"
+              },
+            ].map((qa) => (
+              <li key={qa.question} className="mb-6">
+                {qa.question}
+                <button onClick={()=>{}}>{qa.question}</button>
+
+                <div>
+                  {qa.answer}
+                </div>
+            
+              </li>
+            ))
+          }
+          </ul>
+        </div>
       </section>
     </main>
   );
