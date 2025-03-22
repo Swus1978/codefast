@@ -1,19 +1,17 @@
-
 import ButtonLogin from "@/components/ButtonLogin";
 import FAQListitem from "@/components/FAQListitem";
 import productDemo from "@/app/productDemo.jpg";
 import Image from "next/image";
-import clientPromise from "../libs/mongo";
 import { auth } from "../auth";
 
 export default async function Home() {
   const session = await auth();
-  
+
   return (
     <main>
-      {/*HEADER*/}
+      {/* HEADER */}
       <section className="bg-base-200">
-        <div className=" max-w-5xl mx-auto flex justify-between items-center px-8 py-2">
+        <div className="max-w-5xl mx-auto flex justify-between items-center px-8 py-2">
           <div className="font-bold">SwusTechSaas</div>
           <div className="space-x-4 max-md:hidden">
             <a className="link link-hover" href="#pricing">
@@ -28,12 +26,14 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      {/*  HERO */}
+
+      {/* HERO */}
       <section className="bg-base-100 text-center lg:text-left py-32 px-8 max-w-5xl mx-auto flex flex-col lg:flex-row gap-14 items-center lg:items-start">
         <Image
           src={productDemo}
           alt="product demo"
-          className="w-96 rounded-xl "
+          className="w-96 rounded-xl"
+          priority // Add priority if this image is above the fold
         />
 
         <div>
@@ -47,6 +47,7 @@ export default async function Home() {
           <ButtonLogin session={session} />
         </div>
       </section>
+
       {/* PRICING */}
       <section id="pricing" className="bg-base-200">
         <div className="py-32 px-8 max-w-3xl mx-auto">
@@ -79,6 +80,7 @@ export default async function Home() {
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
+                    aria-hidden="true"
                   >
                     <path
                       strokeLinecap="round"
@@ -95,29 +97,29 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      {/*  FAQ */}
+
+      {/* FAQ */}
       <section id="faq" className="bg-base-200">
         <div className="py-32 px-8 max-w-3xl mx-auto">
           <p className="text-sm uppercase font-medium text-center text-primary mb-4">
             FAQ
           </p>
-
           <h2 className="text-3xl lg:text-4xl font-extrabold mb-12 text-center">
-            Frequetly Asked Questions
+            Frequently Asked Questions
           </h2>
-          <ul className="max-w-lg-mx-auto">
+          <ul className="max-w-lg mx-auto">
             {[
               {
                 question: "What do I get exactly?",
-                answer: "Lorem Ipseum",
+                answer: "Lorem Ipsum",
               },
               {
                 question: "Can I get a refund?",
-                answer: "Lorem Ipseum",
+                answer: "Lorem Ipsum",
               },
               {
                 question: "I have another question",
-                answer: "Lorem Ipseum",
+                answer: "Lorem Ipsum",
               },
             ].map((qa) => (
               <FAQListitem key={qa.question} qa={qa} />
@@ -128,4 +130,3 @@ export default async function Home() {
     </main>
   );
 }
-
