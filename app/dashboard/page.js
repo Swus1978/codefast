@@ -3,14 +3,14 @@ import FormNewBoard from "@/components/FormNewBoard";
 import { auth } from "@/auth";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
-import Board from "@/models/Board"; // ✅ Import Board model
+import Board from "@/models/Board"; 
 
 async function getUser() {
   const session = await auth();
 
   await connectMongo();
 
-  return await User.findById(session.user.id).populate("boards"); // ✅ Ensure "boards" is correctly defined in User schema
+  return await User.findById(session.user.id).populate("boards"); 
 }
 
 export default async function Dashboard() {
