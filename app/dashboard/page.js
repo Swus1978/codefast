@@ -1,16 +1,18 @@
+
+import Link from "next/link";
 import ButtonLogout from "@/components/ButtonLogout";
 import FormNewBoard from "@/components/FormNewBoard";
 import { auth } from "@/auth";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
-import Board from "@/models/Board"; 
+import Board from "@/models/Board";
 
 async function getUser() {
   const session = await auth();
 
   await connectMongo();
 
-  return await User.findById(session.user.id).populate("boards"); 
+  return await User.findById(session.user.id).populate("boards");
 }
 
 export default async function Dashboard() {
@@ -32,16 +34,23 @@ export default async function Dashboard() {
             {user.boards.length} Boards
           </h1>
 
-          <ul className="space-y-4">{user.boards.map((board) => {
-            return (
-              <div key={board._id}
-                className="bg-base-100 p-6 rounded-3xl"
-              >
-                {board.name}
+          <ul className="space-y-4">
+            {user.boards.map((board) => {
+            
+              if (!board._id) return null; 
 
-              </div>
-            )
-          })}</ul>
+              return (
+                <li key={board._id} >
+                  <Link href={`/dashboard/b/${board._id}`}
+                    className="block bg-base-100 p-6 rounded-3xl hover:bg-neutral hover:text-neutral-content duration-1000"
+                  >
+                    {board.name}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+
 
         </div>
       </section>
