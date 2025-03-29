@@ -21,7 +21,8 @@
     "react-dom": "^18",
     "react-hot-toast": "^2.5.2",
     "snappy": "^7.2.2",
-    "socks": "^2.8.4"
+    "socks": "^2.8.4",
+    "stripe": "^17.7.0"
   },
   "devDependencies": {
     "daisyui": "^4.11.1",

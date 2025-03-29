@@ -4,7 +4,7 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 
-const ButtonDeleteBoard = ({ boardId }) => {  // Pass boardId as a prop
+const ButtonDeleteBoard = ({ boardId }) => { 
     const router = useRouter();
 
     const handleDeleteBoard = async () => {

@@ -84,9 +84,9 @@ export default async function FeedbackBoard({ params }) {
             <h1 className="font-extrabold text-xl mb-4">
                 {board ? `${board.name}` : "Board Not Found"}
             </h1>
-            <CardBoardLink boardId={board._id}/>
+            <CardBoardLink boardId={board._id.toString()}/>
 
-            <ButtonDeleteBoard boardId={board._id}/>
+            <ButtonDeleteBoard boardId={board._id.toString()}/>
 
 
         </section>
