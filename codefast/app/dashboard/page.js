@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import ButtonLogout from "@/components/ButtonLogout";
 import FormNewBoard from "@/components/FormNewBoard";
@@ -19,7 +19,7 @@ async function getUser() {
 }
 
 export default async function Dashboard() {
-  const user = await getUser(); 
+  const user = await getUser();
 
   if (!user) {
     return (
