@@ -8,5 +8,5 @@ export default async function SuccessPage() {
         Dashboard
       </Link>
     </main>
-  );
+  )
 }
