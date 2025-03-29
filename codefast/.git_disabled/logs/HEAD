@@ -1,0 +1,18 @@
+0000000000000000000000000000000000000000 7e83a000cde39a0270d51dad82f4d0c5c2216cbf Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1741224326 -0500	commit (initial): Initial commit from Create Next App
+7e83a000cde39a0270d51dad82f4d0c5c2216cbf e4d876fd21b6641b96140c6182dedc23b2f0801f Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1741228441 -0500	commit: first commit
+e4d876fd21b6641b96140c6182dedc23b2f0801f 2b86e3ba5854ce5d9eaa99367d41c5dfbfb36b95 Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1741399539 -0500	commit: add hero & header section
+2b86e3ba5854ce5d9eaa99367d41c5dfbfb36b95 db39cbcf3a40d369024e2e3f683b4dcc2d6318ac Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1741537537 -0500	commit: added a FAQ section
+db39cbcf3a40d369024e2e3f683b4dcc2d6318ac 593da5e8feb15bb7b5020c51757f9167b732661f Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1741543398 -0500	commit: polished homepage
+593da5e8feb15bb7b5020c51757f9167b732661f 483b006e5590fbe2d39eaefbc24aa06123ba9954 Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1741661564 -0500	commit: added image with shape
+483b006e5590fbe2d39eaefbc24aa06123ba9954 57900349c35d3b0425d1a0cd397246c94753f700 Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1742313269 -0500	commit: Updated title to my page
+57900349c35d3b0425d1a0cd397246c94753f700 e8ae48eb441c61dc5d591cdbb834700d2d6786ea Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1742684342 -0500	commit: user auth + google + email
+e8ae48eb441c61dc5d591cdbb834700d2d6786ea 12f81ba0968b69b781dba23eeaac4bd0537b56f9 Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1742685999 -0500	commit: Fix ESLint error and cleanup page.js
+12f81ba0968b69b781dba23eeaac4bd0537b56f9 e6576383b2e2790ecac53f4ea15cd15cf7105683 Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1742686077 -0500	commit: Fix ESLint error and cleanup page.js
+e6576383b2e2790ecac53f4ea15cd15cf7105683 066da6e29b01696c368f1c2cc91251f9e0d7427d Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1742688083 -0500	commit: back to normal
+066da6e29b01696c368f1c2cc91251f9e0d7427d fd6f157d82db1a70182579f682c2fe812cc42fbf Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1742877282 -0500	commit: Worked on API settings
+fd6f157d82db1a70182579f682c2fe812cc42fbf abbeac620b3459c9bd8453b4270e15398a3df649 Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1743000813 -0500	commit: new feature: create feedback boards
+abbeac620b3459c9bd8453b4270e15398a3df649 c65aa55ac240b7dc8d4e1b3663ec4d9f6a375dcf Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1743125878 -0500	commit: new feature: dynamic pages and board deletion
+c65aa55ac240b7dc8d4e1b3663ec4d9f6a375dcf 019023324f289a13c4976d9a04df4f7efe0d772c Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1743212415 -0500	commit: add subscriptions
+019023324f289a13c4976d9a04df4f7efe0d772c 4e0196176f8f1a471d586b1fd43e680d28398e28 Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1743220656 -0500	commit: updated code
+4e0196176f8f1a471d586b1fd43e680d28398e28 7633cbc118c5a92b26d1349451d82a9d47af66c8 Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1743221057 -0500	commit: button updated
+7633cbc118c5a92b26d1349451d82a9d47af66c8 59de425370eed15978b41faf69c8e3b912d8c038 Juan Gustavo Quinones <98677463+Swus1978@users.noreply.github.com> 1743221463 -0500	commit: updated code lint
