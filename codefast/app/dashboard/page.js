@@ -1,25 +1,23 @@
 "use client";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import ButtonLogout from "@/components/ButtonLogout";
 import FormNewBoard from "@/components/FormNewBoard";
-import { auth } from "@/auth";
-import connectMongo from "@/libs/mongoose";
-import User from "@/models/User";
 import ButtonCheckout from "@/components/ButtonCheckout";
 
-async function getUser() {
-  const session = await auth();
+export default function Dashboard() {
+  const [user, setUser] = useState(null);
 
-  if (!session || !session.user) {
-    return null;
-  }
-
-  await connectMongo();
-  return await User.findById(session.user.id).populate("boards");
-}
-
-export default async function Dashboard() {
-  const user = await getUser();
+  useEffect(() => {
+    async function fetchUserData() {
+      const res = await fetch("/api/user");
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data);
+      }
+    }
+    fetchUserData();
+  }, []);
 
   if (!user) {
     return (
@@ -45,22 +43,17 @@ export default async function Dashboard() {
           <h1 className="font-extrabold text-xl mb-4">
             {user.boards?.length || 0} Boards
           </h1>
-
           <ul className="space-y-4">
-            {user.boards?.map((board) => {
-              if (!board?._id) return null;
-
-              return (
-                <li key={board._id}>
-                  <Link
-                    href={`/dashboard/b/${board._id}`}
-                    className="block bg-base-100 p-6 rounded-3xl hover:bg-neutral hover:text-neutral-content duration-1000"
-                  >
-                    {board.name}
-                  </Link>
-                </li>
-              );
-            })}
+            {user.boards?.map((board) => (
+              <li key={board._id}>
+                <Link
+                  href={`/dashboard/b/${board._id}`}
+                  className="block bg-base-100 p-6 rounded-3xl hover:bg-neutral hover:text-neutral-content duration-1000"
+                >
+                  {board.name}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
       </section>

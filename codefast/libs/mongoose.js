@@ -1,21 +1,27 @@
-import clientPromise from "@/libs/mongoose"; // Import client promise from mongoose.js
+// libs/mongoose.js
+import mongoose from "mongoose";
 
-export default async function handler(req, res) {
-  try {
-    // Wait for the MongoDB client to connect
-    const client = await clientPromise;
-
-    // Get the MongoDB database (use your actual database name here)
-    const db = client.db(); // Assuming default database; you can specify a database if needed
-
-    // Perform any MongoDB operation, here we fetch from a collection
-    const data = await db.collection("yourCollection").find().toArray();
-
-    // Return the data as a JSON response
-    res.status(200).json(data);
-  } catch (error) {
-    // Handle any errors that occur during the connection or query
-    console.error("Error connecting to MongoDB:", error);
-    res.status(500).json({ error: "Failed to connect to the database" });
+// Function to connect to MongoDB using Mongoose
+const connectMongo = async () => {
+  // Avoid duplicate connections (i.e., when in development mode)
+  if (mongoose.connections[0].readyState) {
+    return;
   }
+
+  // Connect to MongoDB
+  await mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true, // Ensures more stable connections
+  });
+};
+
+if (typeof window !== "undefined") {
+  throw new Error("MongoDB client should only be used on the server");
 }
+
+// Validate the MongoDB URI
+if (!process.env.MONGODB_URI) {
+  throw new Error("Invalid/Missing environment variable: 'MONGODB_URI'");
+}
+
+export default connectMongo;
