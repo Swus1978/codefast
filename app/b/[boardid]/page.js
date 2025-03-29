@@ -1,29 +1,22 @@
 import connectMongo from "@/libs/mongoose";
 import Board from "@/models/Board";
-import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 const getBoard = async (boardId) => {
- 
-        await connectMongo();
-        
-       
+  await connectMongo();
 
-        const board = await Board.findById(boardId).lean();
+  const board = await Board.findById(boardId).lean();
 
-        if (!board) {
-            redirect("/");
-        }
+  if (!board) {
+    redirect("/");
+  }
 
-        return board;
- 
+  return board;
 };
 
 export default async function PublicFeedbackBoard({ params }) {
-    const { boardId } = params;
-    const board = await getBoard(boardId);
-    
-    return (
-        <main>{board.name}</main>
-    );
+  const { boardId } = params;
+  const board = await getBoard(boardId);
+
+  return <main>{board.name}</main>;
 }
