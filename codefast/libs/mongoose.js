@@ -1,34 +1,21 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
+import clientPromise from "@/libs/mongoose"; // Import client promise from mongoose.js
 
-// Validate environment variable
-if (!process.env.MONGO_URI) {
-  throw new Error("Invalid/Missing environment variable: 'MONGO_URI'");
-}
+export default async function handler(req, res) {
+  try {
+    // Wait for the MongoDB client to connect
+    const client = await clientPromise;
 
-const uri = process.env.MONGO_URI;
-const options = {
-  serverApi: {
-    version: ServerApiVersion.v1,
-    strict: true,
-    deprecationErrors: true,
-  },
-};
+    // Get the MongoDB database (use your actual database name here)
+    const db = client.db(); // Assuming default database; you can specify a database if needed
 
-// Use a global variable to cache the MongoDB client in development mode
-let client;
-let clientPromise;
+    // Perform any MongoDB operation, here we fetch from a collection
+    const data = await db.collection("yourCollection").find().toArray();
 
-if (process.env.NODE_ENV === "development") {
-  // In development mode, reuse the client across hot reloads
-  if (!global._mongoClientPromise) {
-    client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
+    // Return the data as a JSON response
+    res.status(200).json(data);
+  } catch (error) {
+    // Handle any errors that occur during the connection or query
+    console.error("Error connecting to MongoDB:", error);
+    res.status(500).json({ error: "Failed to connect to the database" });
   }
-  clientPromise = global._mongoClientPromise;
-} else {
-  // In production mode, create a new client
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect();
 }
-
-export default clientPromise;
