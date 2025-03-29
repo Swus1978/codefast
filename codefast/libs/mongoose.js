@@ -1,50 +1,34 @@
+import { MongoClient, ServerApiVersion } from "mongodb";
 
-import mongoose from 'mongoose';
-import User from '@/models/User';
-import Board from '@/models/Board';
-
-const MONGODB_URI = process.env.MONGO_URI;
-
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGO_URI environment variable');
+// Validate environment variable
+if (!process.env.MONGO_URI) {
+  throw new Error("Invalid/Missing environment variable: 'MONGO_URI'");
 }
 
+const uri = process.env.MONGO_URI;
+const options = {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  },
+};
 
-let cached = global.mongoose;
+// Use a global variable to cache the MongoDB client in development mode
+let client;
+let clientPromise;
 
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
+if (process.env.NODE_ENV === "development") {
+  // In development mode, reuse the client across hot reloads
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(uri, options);
+    global._mongoClientPromise = client.connect();
+  }
+  clientPromise = global._mongoClientPromise;
+} else {
+  // In production mode, create a new client
+  client = new MongoClient(uri, options);
+  clientPromise = client.connect();
 }
 
-async function connectMongo() {
-  if (cached.conn) {
-    return cached.conn;
-  }
-
-  if (!cached.promise) {
-    const opts = {
-      bufferCommands: false, 
-      serverSelectionTimeoutMS: 10000, 
-      socketTimeoutMS: 45000, 
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then(mongoose => {
-      console.log('MongoDB connected successfully');
-      return mongoose;
-    }).catch(err => {
-      console.error('MongoDB connection error:', err);
-      throw err;
-    });
-  }
-
-  try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null; 
-    throw e;
-  }
-
-  return cached.conn;
-}
-
-export default connectMongo;
+export default clientPromise;
