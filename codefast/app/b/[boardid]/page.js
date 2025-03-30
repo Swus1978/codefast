@@ -1,5 +1,6 @@
 import connectMongo from "@/libs/mongoose";
 import Board from "@/models/Board";
+import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 const getBoard = async (boardId) => {

@@ -1,27 +1,51 @@
-// libs/mongoose.js
 import mongoose from "mongoose";
+import User from "@/models/User";
+import Board from "@/models/Board";
 
-// Function to connect to MongoDB using Mongoose
-const connectMongo = async () => {
-  // Avoid duplicate connections (i.e., when in development mode)
-  if (mongoose.connections[0].readyState) {
-    return;
-  }
+const MONGODB_URI = process.env.MONGO_URI;
 
-  // Connect to MongoDB
-  await mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true, // Ensures more stable connections
-  });
-};
-
-if (typeof window !== "undefined") {
-  throw new Error("MongoDB client should only be used on the server");
+if (!MONGODB_URI) {
+  throw new Error("Please define the MONGO_URI environment variable");
 }
 
-// Validate the MongoDB URI
-if (!process.env.MONGODB_URI) {
-  throw new Error("Invalid/Missing environment variable: 'MONGODB_URI'");
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
+async function connectMongo() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000,
+    };
+
+    cached.promise = mongoose
+      .connect(MONGODB_URI, opts)
+      .then((mongoose) => {
+        console.log("MongoDB connected successfully");
+        return mongoose;
+      })
+      .catch((err) => {
+        console.error("MongoDB connection error:", err);
+        throw err;
+      });
+  }
+
+  try {
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
+  }
+
+  return cached.conn;
 }
 
 export default connectMongo;

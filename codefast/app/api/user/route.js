@@ -1,24 +1,30 @@
-// api/user/route.js
 import { NextResponse } from "next/server";
-import { auth } from "@/auth"; // Your authentication function
-import connectMongo from "@/libs/mongoose"; // Import your MongoDB connection
-import User from "@/models/User"; // Import your Mongoose model
+import { auth } from "@/auth";
+import connectMongo from "@/libs/mongoose";
+import User from "@/models/User";
 
 export async function GET(req) {
   try {
-    const session = await auth(); // Get the session from your auth system
+    const session = await auth();
     if (!session) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    // Connect to MongoDB
     await connectMongo();
 
-    // Fetch user data
-    const user = await User.findById(session.user.id); // Assuming `user.id` is the session user ID
+    // Fetch user data with populated boards
+    const user = await User.findById(session.user.id).populate("boards");
 
-    return NextResponse.json(user); // Respond with user data
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // Convert Mongoose document to plain object and sanitize if needed
+    const userData = user.toObject ? user.toObject() : user;
+
+    return NextResponse.json(userData);
   } catch (error) {
+    console.error("Error in /api/user:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

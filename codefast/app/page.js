@@ -2,6 +2,7 @@ import ButtonLogin from "@/components/ButtonLogin";
 import FAQListitem from "@/components/FAQListitem";
 import productDemo from "@/app/productDemo.jpg";
 import Image from "next/image";
+import clientPromise from "../libs/mongo";
 import { auth } from "../auth";
 
 export default async function Home() {
