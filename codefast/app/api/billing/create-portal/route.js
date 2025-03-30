@@ -4,9 +4,9 @@ import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
 import Stripe from "stripe";
 
-export async function POST(req) {
+export async function POST(_req) {
   try {
-    const body = await req.json();
+    const body = await _req.json();
 
     if (!body.returnUrl) {
       return NextResponse.json(

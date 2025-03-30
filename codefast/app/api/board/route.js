@@ -4,9 +4,9 @@ import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
 import Board from "@/models/Board";
 
-export async function POST(req) {
+export async function POST(_req) {
   try {
-    const body = await req.json();
+    const body = await _req.json();
     if (!body.name) {
       return NextResponse.json(
         { error: "Board name is required" },
