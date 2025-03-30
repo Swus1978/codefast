@@ -7,30 +7,24 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "npm install && next build"
+    "vercel-build": "npm install --production=false && next build"
   },
   "dependencies": {
-    "@auth/mongodb-adapter": "^3.8.0",
-    "aws4": "^1.13.2",
-    "axios": "^1.8.4",
-    "gcp-metadata": "^5.3.0",
-    "mongodb": "^6.15.0",
-    "mongodb-client-encryption": "^6.3.0",
-    "mongoose": "^8.12.2",
+    "@auth/mongodb-adapter": "3.8.0",
     "next": "14.2.3",
-    "next-auth": "^5.0.0-beta.25",
-    "react": "^18",
-    "react-dom": "^18",
-    "react-hot-toast": "^2.5.2",
-    "snappy": "^7.2.2",
-    "socks": "^2.8.4",
-    "stripe": "^17.7.0"
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "next-auth": "5.0.0-beta.25",
+    // Keep other dependencies but pin their versions (remove ^)
+    "aws4": "1.13.2",
+    "axios": "1.8.4",
+    "mongodb": "6.15.0",
+    "stripe": "17.7.0"
   },
   "devDependencies": {
-    "daisyui": "^4.11.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.0",
-    "postcss": "^8",
-    "tailwindcss": "^3.4.1"
+    "daisyui": "4.11.1",
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.3",
+    "tailwindcss": "3.4.1"
   }
 }
