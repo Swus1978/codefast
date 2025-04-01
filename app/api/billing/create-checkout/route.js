@@ -1,48 +1,50 @@
-
-import {NextResponse} from "next/server";
-import {auth} from "@/auth";
+import { NextResponse } from "next/server";
+import { auth } from "@/auth";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
 import Stripe from "stripe";
 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
 export async function POST(req) {
-   try {
-    const body = await req.json();
-
-    if (!body.successUrl || !body.cancelUrl) {
-
-        return NextResponse.json(
-            {error: "Success and cancel URLs are required"},
-            {status: 400}
-        )
-
+  try {
+    const { successUrl, cancelUrl } = await req.json();
+    if (!successUrl || !cancelUrl) {
+      return NextResponse.json(
+        { error: "Success and cancel URLs are required" },
+        { status: 400 }
+      );
     }
 
     const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     await connectMongo();
     const user = await User.findById(session.user.id);
-
-    const stripe = new Stripe(process.env.STRIPE_API_KEY);
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
     const stripeCheckoutSession = await stripe.checkout.sessions.create({
-        mode: "subscription",
-        line_items: [{
-            price: process.env.STRIPE_PRICE_ID,
-            quantity: 1,
-        }],
-    
-        success_url: body.successUrl || 'http://swustech.com/handle-redirect',
-        cancel_url: body.cancel_url || 'http://localhost:3000/dashboard',
-        customer_email: user.email,
-        client_reference_id: user._id.toString()
+      mode: "subscription",
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price: process.env.STRIPE_PRICE_ID,
+          quantity: 1,
+        },
+      ],
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      customer_email: user.email,
+      client_reference_id: user._id.toString(),
     });
 
-    return NextResponse.json({url: stripeCheckoutSession.url});
-
-
-   } catch (error) {
-    
-    return NextResponse.json({error: error.message}, {status: 500});
-    
-   }
+    return NextResponse.json({ url: stripeCheckoutSession.url });
+  } catch (error) {
+    console.error("Checkout error:", error.message);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }

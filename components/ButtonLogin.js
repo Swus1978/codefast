@@ -4,13 +4,14 @@ import { signIn } from "next-auth/react";
 
 const ButtonLogin = ({ session, extraStyle }) => {
   const dashboardUrl = "/dashboard";
-  if (session) {
+  if (session?.user) {
+    // Check session and session.user
     return (
       <Link
         href={dashboardUrl}
         className={`btn btn-primary ${extraStyle ? extraStyle : ""}`}
       >
-        Welcome back {session.user.name || "friends"}!
+        Welcome back {session.user.name || "friend"}!
       </Link>
     );
   }
