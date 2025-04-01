@@ -43,7 +43,10 @@ export default async function Dashboard() {
               if (!board?._id) return null;
               return (
                 <li key={board._id}>
-                  <Link href={`/dashboard/b/${board._id}`} className="...">
+                  <Link
+                    href={`/dashboard/b/${board._id}`}
+                    className="block bg-base-100 p-6 rounded-3xl hover:bg-neutral hover:text-neutral-content"
+                  >
                     {board.name}
                   </Link>
                 </li>
