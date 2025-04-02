@@ -12,6 +12,7 @@
     "@auth/mongodb-adapter": "^3.8.0",
     "aws4": "^1.13.2",
     "axios": "^1.8.4",
+    "bad-words": "^4.0.0",
     "gcp-metadata": "^5.3.0",
     "mongodb": "^6.15.0",
     "mongodb-client-encryption": "^6.3.0",

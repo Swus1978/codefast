@@ -5,27 +5,28 @@ const postSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: [true, "Title is required"],
+      required: true,
       trim: true,
+      maxlength: 100,
     },
     description: {
       type: String,
-      required: [true, "Description is required"],
+      required: true,
       trim: true,
+      maxlength: 1000,
     },
     boardId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Board",
-      required: [true, "Board ID is required"],
+      required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: null, // Optional, null if not logged in
     },
   },
   {
-    timestamps: true, // Adds createdAt and updatedAt fields
+    timestamps: true,
   }
 );
 

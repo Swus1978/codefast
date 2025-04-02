@@ -1,7 +1,7 @@
-// app/dashboard/b/[boardId]/page.js
 import Link from "next/link";
 import connectMongo from "@/libs/mongoose";
 import Board from "@/models/Board";
+import FormAddPost from "@/components/FormAddPost";
 import { redirect } from "next/navigation";
 
 const getBoard = async (boardId) => {
@@ -14,7 +14,7 @@ const getBoard = async (boardId) => {
 };
 
 export default async function FeedbackBoard({ params }) {
-  const boardId = await params.boardId; // Await params explicitly
+  const boardId = await params.boardId;
   const board = await getBoard(boardId);
 
   return (
@@ -38,7 +38,8 @@ export default async function FeedbackBoard({ params }) {
           </Link>
         </div>
       </section>
-      {board.name}
+      {board.name} (public)
+      <FormAddPost />
     </main>
   );
 }
