@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import connectMongo from "@/libs/mongoose";
 import Board from "@/models/Board";
-import Post from "@/models/Post"; // Assuming you have a Post model
+import Post from "@/models/Post";
+import { Filter } from "bad-words";
 
 export async function POST(req) {
   try {
@@ -12,12 +13,16 @@ export async function POST(req) {
     }
 
     const { searchParams } = new URL(req.url);
-    const boardId = searchParams.get("boardId"); // Corrected from boarId
+    const boardId = searchParams.get("boardId");
     const { title, description } = await req.json();
 
-    if (!boardId || !title) {
+    const badWordsFilter = new Filter();
+    const saniteziedTitle = badWordsFilter.clean(title);
+    const sanitizedDescription = badWordsFilter.clean(description);
+
+    if (!saniteziedTitle || !sanitizedDescription) {
       return NextResponse.json(
-        { error: "Board ID and title are required" },
+        { error: "Board title and descriptions are required" },
         { status: 400 }
       );
     }
@@ -35,8 +40,8 @@ export async function POST(req) {
     const post = await Post.create({
       boardId,
       userId: session.user.id,
-      title,
-      description,
+      title: saniteziedTitle,
+      description: sanitizedDescription,
     });
 
     return NextResponse.json({ post }, { status: 201 });

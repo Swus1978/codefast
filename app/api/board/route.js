@@ -47,3 +47,42 @@ export async function POST(req) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+
+export async function DELETE(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const boardId = searchParams.get("boardId");
+
+    if (!boardId) {
+      return NextResponse.json(
+        { error: "boardId is required" },
+        { status: 400 }
+      );
+    }
+
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectMongo();
+    const board = await Board.findOneAndDelete({
+      _id: boardId,
+      userId: session.user.id,
+    });
+
+    if (!board) {
+      return NextResponse.json({ error: "Board not found" }, { status: 404 });
+    }
+
+    await User.updateOne(
+      { _id: session.user.id },
+      { $pull: { boards: boardId } }
+    );
+
+    return NextResponse.json({ message: "Board deleted" });
+  } catch (error) {
+    console.error("Error deleting board:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+}
