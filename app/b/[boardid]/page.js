@@ -1,3 +1,4 @@
+// app/dashboard/b/[boardId]/page.js
 import Link from "next/link";
 import connectMongo from "@/libs/mongoose";
 import Board from "@/models/Board";
@@ -5,25 +6,22 @@ import { redirect } from "next/navigation";
 
 const getBoard = async (boardId) => {
   await connectMongo();
-
   const board = await Board.findById(boardId).lean();
-
   if (!board) {
     redirect("/");
   }
-
   return board;
 };
 
 export default async function FeedbackBoard({ params }) {
-  const { boardId } = params;
+  const boardId = await params.boardId; // Await params explicitly
   const board = await getBoard(boardId);
 
   return (
     <main className="bg-base-200 min-h-screen">
       <section className="bg-base-100">
         <div className="max-w-5xl mx-auto px-5 py-3 flex">
-          <Link href="/dashboard" className="btn ">
+          <Link href="/dashboard" className="btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"

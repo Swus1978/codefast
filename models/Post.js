@@ -1,6 +1,32 @@
-
-// a model for a Post document in the database. Each post has a title, description, a boardId to which it belongs, and a userId (optional) of the user who created it (if logged in). The boardId and userId fields are references to the Board and User models, respectively.
-
+// models/Post.js
 import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, "Title is required"],
+      trim: true,
+    },
+    description: {
+      type: String,
+      required: [true, "Description is required"],
+      trim: true,
+    },
+    boardId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Board",
+      required: [true, "Board ID is required"],
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null, // Optional, null if not logged in
+    },
+  },
+  {
+    timestamps: true, // Adds createdAt and updatedAt fields
+  }
+);
+
+export default mongoose.models.Post || mongoose.model("Post", postSchema);
