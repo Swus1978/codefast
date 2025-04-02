@@ -8,7 +8,8 @@ import ButtonDeleteBoard from "@/components/ButtonDeleteBoard";
 
 const getBoard = async (boardId) => {
   if (!boardId) {
-    return redirect("/dashboard");
+    console.log("No boardId provided, redirecting to dashboard");
+    return null;
   }
 
   try {
@@ -16,7 +17,8 @@ const getBoard = async (boardId) => {
     const session = await auth();
 
     if (!session || !session.user) {
-      return redirect("/login");
+      console.log("No session or user, redirecting to login");
+      return redirect("/login"); // Redirect to login if not authenticated
     }
 
     const board = await Board.findOne({
@@ -25,26 +27,33 @@ const getBoard = async (boardId) => {
     });
 
     if (!board) {
-      return redirect("/dashboard");
+      console.log(
+        `Board not found for boardId: ${boardId}, redirecting to dashboard`
+      );
+      return null;
     }
 
+    console.log(`Board found: ${board.name}`);
     return board;
   } catch (error) {
     console.error("Error fetching board:", error);
-    return redirect("/dashboard");
+    return null;
   }
 };
 
 export default async function FeedbackBoard({ params }) {
-  const boardId = await params.boardId; // Await params.boardId
+  // eslint-disable-next-line @next/next/no-sync-dynamic-apis
+  const boardId = await params.boardId; // Suppress warning if it persists
 
   if (!boardId) {
+    console.log("No boardId in params, redirecting to dashboard");
     return redirect("/dashboard");
   }
 
   const board = await getBoard(boardId);
 
   if (!board) {
+    console.log(`Redirecting to dashboard for boardId: ${boardId}`);
     return redirect("/dashboard");
   }
 
@@ -52,7 +61,7 @@ export default async function FeedbackBoard({ params }) {
     <main className="bg-base-200 min-h-screen">
       <section className="bg-base-100">
         <div className="px-5 py-3 flex max-w-5xl mx-auto">
-          <Link href={"/dashboard"} className="btn">
+          <Link href="/dashboard" className="btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
@@ -70,9 +79,7 @@ export default async function FeedbackBoard({ params }) {
         </div>
       </section>
       <section className="max-w-5xl mx-auto px-5 py-12 space-y-12">
-        <h1 className="font-extrabold text-xl mb-4">
-          {board ? `${board.name}` : "Board Not Found"}
-        </h1>
+        <h1 className="font-extrabold text-xl mb-4">{board.name}</h1>
         <CardBoardLink boardId={board._id.toString()} />
         <ButtonDeleteBoard boardId={board._id.toString()} />
       </section>

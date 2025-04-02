@@ -29,10 +29,8 @@ const FormAddPost = ({ boardId }) => {
       setTitle("");
       setDescription("");
       toast.success("Post created successfully");
-      // Option 1: Refresh current page
+
       router.refresh();
-      // Option 2: Redirect to a post page (uncomment if you have a route like /dashboard/b/[boardId]/p/[postId])
-      // router.push(`/dashboard/b/${boardId}/p/${post._id}`);
     } catch (error) {
       const errorMessage =
         error.response?.data?.error ||

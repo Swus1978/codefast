@@ -1,27 +1,48 @@
 import Link from "next/link";
 import connectMongo from "@/libs/mongoose";
 import Board from "@/models/Board";
+import Post from "@/models/Post"; // Import Post model
 import FormAddPost from "@/components/FormAddPost";
+import CardPost from "@/components/CardPost"; // Import CardPost
 import { redirect } from "next/navigation";
 
-const getBoard = async (boardId) => {
-  await connectMongo();
-  const board = await Board.findById(boardId).lean();
-  if (!board) {
-    redirect("/");
+const getData = async (boardId) => {
+  if (!boardId) {
+    console.log("No boardId provided, redirecting to home");
+    return redirect("/");
   }
-  return board;
+
+  try {
+    await connectMongo();
+    const board = await Board.findById(boardId).lean();
+    if (!board) {
+      console.log(
+        `Board not found for boardId: ${boardId}, redirecting to home`
+      );
+      return redirect("/");
+    }
+
+    const posts = await Post.find({ boardId }).sort({ createdAt: -1 }).lean();
+
+    console.log(`Public board found: ${board.name}, Posts: ${posts.length}`);
+    return { board, posts };
+  } catch (error) {
+    console.error("Error fetching public board data:", error);
+    return redirect("/");
+  }
 };
 
 export default async function PublicFeedbackBoard({ params }) {
+  // eslint-disable-next-line @next/next/no-sync-dynamic-apis
   const boardId = await params.boardId;
-  const board = await getBoard(boardId);
+
+  const { board, posts } = await getData(boardId);
 
   return (
     <main className="bg-base-200 min-h-screen">
       <section className="bg-base-100">
         <div className="max-w-5xl mx-auto px-5 py-3 flex">
-          <Link href="/dashboard" className="btn">
+          <Link href="/" className="btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
@@ -38,8 +59,19 @@ export default async function PublicFeedbackBoard({ params }) {
           </Link>
         </div>
       </section>
-      {board.name} (public)
-      <FormAddPost boardId={boardId} />
+      <section className="max-w-5xl mx-auto px-5 py-12 space-y-12">
+        <h1 className="font-extrabold text-xl mb-4">{board.name} (public)</h1>
+        <FormAddPost boardId={boardId} />
+        {posts.length > 0 ? (
+          <ul className="space-y-4">
+            {posts.map((post) => (
+              <CardPost key={post._id.toString()} post={post} />
+            ))}
+          </ul>
+        ) : (
+          <p>No posts yet. Be the first to add one!</p>
+        )}
+      </section>
     </main>
   );
 }
