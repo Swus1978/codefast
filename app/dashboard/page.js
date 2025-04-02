@@ -1,18 +1,38 @@
 import Link from "next/link";
 import ButtonLogout from "@/components/ButtonLogout";
-import FormNewBoard from "@/components/FormNewBoard";
+import FormNewBoard from "@/components/FormNewBoard"; // Verify this path
 import { auth } from "@/auth";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
+import Board from "@/models/Board";
+import mongoose from "mongoose";
 import ButtonCheckout from "@/components/ButtonCheckout";
+
+// Force Board model registration
+console.log("Checking Board model registration");
+if (!mongoose.models.Board) {
+  console.log("Board model not found, registering manually");
+  const boardSchema = require("@/models/Board").default.schema;
+  mongoose.model("Board", boardSchema);
+} else {
+  console.log("Board model already registered");
+}
 
 async function getUser() {
   const session = await auth();
   if (!session || !session.user) {
+    console.log("No session or user");
     return null;
   }
   await connectMongo();
-  return await User.findById(session.user.id).populate("boards");
+  console.log("Board model status before query:", !!mongoose.models.Board);
+  const user = await User.findById(session.user.id).populate("boards").lean();
+  if (!user) {
+    console.log("User not found");
+    return null;
+  }
+  user.boards = user.boards?.map((board) => ({ ...board })) || [];
+  return user;
 }
 
 export default async function Dashboard() {
@@ -36,13 +56,13 @@ export default async function Dashboard() {
         <FormNewBoard />
         <div>
           <h1 className="font-extrabold text-xl mb-4">
-            {user.boards?.length || 0} Boards
+            {user.boards.length} Boards
           </h1>
           <ul className="space-y-4">
-            {user.boards?.map((board) => {
+            {user.boards.map((board) => {
               if (!board?._id) return null;
               return (
-                <li key={board._id}>
+                <li key={board._id.toString()}>
                   <Link
                     href={`/dashboard/b/${board._id}`}
                     className="block bg-base-100 p-6 rounded-3xl hover:bg-neutral hover:text-neutral-content"

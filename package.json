@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@auth/mongodb-adapter": "^3.8.0",
+    "@napi-rs/snappy-win32-x64-msvc": "^7.2.2",
     "aws4": "^1.13.2",
     "axios": "^1.8.4",
     "bad-words": "^4.0.0",

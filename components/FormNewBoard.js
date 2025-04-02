@@ -12,9 +12,7 @@ const FormNewBoard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (isLoading) return;
-
     setIsLoading(true);
     console.log("Submitting form with name:", name);
 

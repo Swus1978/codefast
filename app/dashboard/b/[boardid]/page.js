@@ -30,18 +30,19 @@ const getBoard = async (boardId) => {
 
     return board;
   } catch (error) {
+    console.error("Error fetching board:", error);
     return redirect("/dashboard");
   }
 };
 
 export default async function FeedbackBoard({ params }) {
-  const { boardid } = params;
+  const boardId = await params.boardId; // Await params.boardId
 
-  if (!boardid) {
+  if (!boardId) {
     return redirect("/dashboard");
   }
 
-  const board = await getBoard(boardid);
+  const board = await getBoard(boardId);
 
   if (!board) {
     return redirect("/dashboard");
@@ -49,7 +50,6 @@ export default async function FeedbackBoard({ params }) {
 
   return (
     <main className="bg-base-200 min-h-screen">
-      {/* HEADER */}
       <section className="bg-base-100">
         <div className="px-5 py-3 flex max-w-5xl mx-auto">
           <Link href={"/dashboard"} className="btn">
@@ -74,7 +74,6 @@ export default async function FeedbackBoard({ params }) {
           {board ? `${board.name}` : "Board Not Found"}
         </h1>
         <CardBoardLink boardId={board._id.toString()} />
-
         <ButtonDeleteBoard boardId={board._id.toString()} />
       </section>
     </main>
