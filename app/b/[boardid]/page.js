@@ -13,7 +13,7 @@ const getBoard = async (boardId) => {
   return board;
 };
 
-export default async function FeedbackBoard({ params }) {
+export default async function PublicFeedbackBoard({ params }) {
   const boardId = await params.boardId;
   const board = await getBoard(boardId);
 
@@ -39,7 +39,7 @@ export default async function FeedbackBoard({ params }) {
         </div>
       </section>
       {board.name} (public)
-      <FormAddPost />
+      <FormAddPost boardId={boardId} />
     </main>
   );
 }
