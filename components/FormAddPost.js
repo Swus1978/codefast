@@ -45,13 +45,12 @@ const FormAddPost = ({ boardId }) => {
 
   return (
     <form
-      className="bg-base-100 p-8 rounded-3xl space-y-8"
+      className="bg-base-100 p-8 rounded-3xl space-y-8 w-full md:max-w-sm shrink-0"
       onSubmit={handleSubmit}
     >
       <p className="font-bold text-lg">Suggest a feature</p>
       <label className="form-control w-full">
         <span className="label-text">Short, descriptive title</span>{" "}
-        {/* Fixed typo: lable-text -> label-text */}
         <input
           required
           type="text"
