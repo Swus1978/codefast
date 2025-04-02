@@ -1,4 +1,3 @@
-// app/api/board/route.js
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import connectMongo from "@/libs/mongoose";
@@ -35,7 +34,7 @@ export async function POST(req) {
     }
 
     const board = await Board.create({
-      userId: user.id,
+      userId: user._id,
       name: body.name,
     });
 

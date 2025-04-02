@@ -16,19 +16,23 @@ const FormNewBoard = () => {
     if (isLoading) return;
 
     setIsLoading(true);
+    console.log("Submitting form with name:", name);
 
     try {
-      const data = await axios.post("/api/board", { name });
+      const response = await axios.post("/api/board", { name });
+      console.log("API response:", response.data);
+      const { board } = response.data;
       setName("");
       toast.success("Board created successfully");
-      router.refresh();
+      router.push(`/dashboard/b/${board._id}`);
+      console.log("Navigating to:", `/dashboard/b/${board._id}`);
     } catch (error) {
       const errorMessage =
         error.response?.data?.error ||
         error.message ||
         "Something went wrong. Please try again.";
-
-      toast.error("Something went wrong. Please try again.");
+      console.error("Error creating board:", errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -41,19 +45,21 @@ const FormNewBoard = () => {
     >
       <p className="font-bold text-lg">Create a new feedback board</p>
       <label className="form-control w-full">
-        <span className="lable-text">Board Name</span>
+        <span className="label-text">Board Name</span>
         <input
           required
           type="text"
           className="input input-bordered w-full"
           placeholder="Type here"
           value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
+          onChange={(e) => setName(e.target.value)}
         />
       </label>
-      <button className="btn btn-primary w-full" type="submit">
+      <button
+        className="btn btn-primary w-full"
+        type="submit"
+        disabled={isLoading}
+      >
         {isLoading && (
           <span className="loading loading-spinner loading-xs"></span>
         )}
@@ -62,4 +68,5 @@ const FormNewBoard = () => {
     </form>
   );
 };
+
 export default FormNewBoard;
