@@ -9,7 +9,6 @@ const FormAddPost = ({ boardId }) => {
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -18,24 +17,29 @@ const FormAddPost = ({ boardId }) => {
     if (isLoading) return;
 
     setIsLoading(true);
+    console.log("Submitting post with title:", title, "boardId:", boardId);
 
     try {
-      const data = await axios.post(`/api/post?boarId=${boardId}`, {
+      const response = await axios.post(`/api/post?boardId=${boardId}`, {
         title,
         description,
       });
+      console.log("API response:", response.data);
+      const { post } = response.data;
       setTitle("");
       setDescription("");
-
-      toast.success("Board created successfully");
+      toast.success("Post created successfully");
+      // Option 1: Refresh current page
       router.refresh();
+      // Option 2: Redirect to a post page (uncomment if you have a route like /dashboard/b/[boardId]/p/[postId])
+      // router.push(`/dashboard/b/${boardId}/p/${post._id}`);
     } catch (error) {
       const errorMessage =
         error.response?.data?.error ||
         error.message ||
         "Something went wrong. Please try again.";
-
-      toast.error("Something went wrong. Please try again.");
+      console.error("Error creating post:", errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -48,16 +52,15 @@ const FormAddPost = ({ boardId }) => {
     >
       <p className="font-bold text-lg">Suggest a feature</p>
       <label className="form-control w-full">
-        <span className="lable-text">Short, descriptive title</span>
+        <span className="label-text">Short, descriptive title</span>{" "}
+        {/* Fixed typo: lable-text -> label-text */}
         <input
           required
           type="text"
           className="input input-bordered w-full"
-          placeholder="GHreen buttons plz"
+          placeholder="Green buttons plz"
           value={title}
-          onChange={(e) => {
-            setTitle(e.target.value);
-          }}
+          onChange={(e) => setTitle(e.target.value)}
           maxLength={100}
         />
       </label>
@@ -65,15 +68,17 @@ const FormAddPost = ({ boardId }) => {
         <legend className="fieldset-legend">Description</legend>
         <textarea
           value={description}
-          onChange={(e) => {
-            setDescription(e.target.value);
-          }}
+          onChange={(e) => setDescription(e.target.value)}
           className="textarea h-24"
           placeholder="The login button color should be green to match our brand colors."
           maxLength={1000}
         ></textarea>
       </fieldset>
-      <button className="btn btn-primary w-full" type="submit">
+      <button
+        className="btn btn-primary w-full"
+        type="submit"
+        disabled={isLoading}
+      >
         {isLoading && (
           <span className="loading loading-spinner loading-xs"></span>
         )}
@@ -82,4 +87,5 @@ const FormAddPost = ({ boardId }) => {
     </form>
   );
 };
+
 export default FormAddPost;

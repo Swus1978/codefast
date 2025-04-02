@@ -1,56 +1,47 @@
 import { NextResponse } from "next/server";
-import { Filter } from "bad-words";
-import connectMongo from "@/libs/mongoose";
-import Post from "@/models/Post";
 import { auth } from "@/auth";
+import connectMongo from "@/libs/mongoose";
+import Board from "@/models/Board";
+import Post from "@/models/Post"; // Assuming you have a Post model
 
 export async function POST(req) {
   try {
-    // Parse the request body
-    const body = await req.json();
-    const { title, description } = body;
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
-    // Get boardId from query parameters
     const { searchParams } = new URL(req.url);
-    const boardId = searchParams.get("boardId");
+    const boardId = searchParams.get("boardId"); // Corrected from boarId
+    const { title, description } = await req.json();
 
-    // Sanitize input data
-    const badWordsFilter = new Filter();
-    const saniteziedTitle = badWordsFilter.clean(title);
-    const saniteziedDescription = badWordsFilter.clean(description);
-
-    // Validate required fields
-    if (!saniteziedTitle) {
+    if (!boardId || !title) {
       return NextResponse.json(
-        { error: "Title and description are required" },
-        { status: 400 }
-      );
-    }
-    if (!boardId) {
-      return NextResponse.json(
-        { error: "boardId is required in query parameters" },
+        { error: "Board ID and title are required" },
         { status: 400 }
       );
     }
 
-    // Connect to MongoDB
     await connectMongo();
 
-    // Check if the user is logged in (optional userId)
-    const session = await auth();
-    const userId = session?.user?.id || null;
+    const board = await Board.findOne({
+      _id: boardId,
+      userId: session.user.id,
+    });
+    if (!board) {
+      return NextResponse.json({ error: "Board not found" }, { status: 404 });
+    }
 
-    // Create the new post
     const post = await Post.create({
-      title: saniteziedTitle,
-      description: saniteziedDescription,
       boardId,
-      userId,
+      userId: session.user.id,
+      title,
+      description,
     });
 
     return NextResponse.json({ post }, { status: 201 });
   } catch (error) {
-    console.error("Error creating post:", error.message);
+    console.error("Error creating post:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
