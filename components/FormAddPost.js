@@ -30,7 +30,7 @@ const FormAddPost = ({ boardId }) => {
       setDescription("");
       toast.success("Post created successfully");
 
-      router.refresh();
+      router.push(`/b/${boardId}`);
     } catch (error) {
       const errorMessage =
         error.response?.data?.error ||
@@ -45,7 +45,7 @@ const FormAddPost = ({ boardId }) => {
 
   return (
     <form
-      className="bg-base-100 p-8 rounded-3xl space-y-8 w-full md:max-w-sm shrink-0"
+      className="bg-base-100 p-8 rounded-3xl space-y-8 w-full md:max-w-sm shrink-0 md:sticky top-8"
       onSubmit={handleSubmit}
     >
       <p className="font-bold text-lg">Suggest a feature</p>
