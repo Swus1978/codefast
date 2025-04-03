@@ -7,7 +7,9 @@ const CardPost = ({ post }) => {
     <li className="bg-base-100 rounded-3xl p-6 flex justify-between items-start">
       <div>
         <div className="font-bold mb-1">{post.title}</div>
-        <div className="opacity-80 leading-relaxed">{post.description}</div>
+        <div className="opacity-80 leading-relaxed max-h-32 overflow-scroll">
+          {post.description}
+        </div>
       </div>
       <div className="flex gap-2">
         <ButtonVote

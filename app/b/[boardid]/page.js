@@ -8,33 +8,49 @@ import { redirect } from "next/navigation";
 
 const getData = async (boardId) => {
   if (!boardId) {
-    console.log("No boardId provided, redirecting to home");
-    return redirect("/");
+    console.log("No boardId provided");
+    return { redirectTo: "/" };
   }
 
   try {
     await connectMongo();
     const board = await Board.findById(boardId).lean();
     if (!board) {
-      console.log(
-        `Board not found for boardId: ${boardId}, redirecting to home`
-      );
-      return redirect("/");
+      console.log(`Board not found for boardId: ${boardId}`);
+      return { redirectTo: "/" };
     }
 
-    const posts = await Post.find({ boardId }).sort({ createdAt: -1 }).lean();
+    const posts = await Post.find({ boardId })
+      .sort({ votesCounter: -1 })
+      .lean();
+
+    // Convert MongoDB documents to plain objects
+    const plainBoard = { ...board, _id: board._id.toString() };
+    const plainPosts = posts.map((post) => ({
+      ...post,
+      _id: post._id.toString(),
+      boardId: post.boardId.toString(),
+      createdAt: post.createdAt.toISOString(),
+    }));
 
     console.log(`Public board found: ${board.name}, Posts: ${posts.length}`);
-    return { board, posts };
+    return { board: plainBoard, posts: plainPosts };
   } catch (error) {
     console.error("Error fetching public board data:", error);
-    return redirect("/");
+    return { redirectTo: "/" };
   }
 };
 
 export default async function PublicFeedbackBoard({ params }) {
   const boardId = await params.boardId;
-  const { board, posts } = await getData(boardId);
+  const data = await getData(boardId);
+
+  // Handle redirect if instructed
+  if (data.redirectTo) {
+    return redirect(data.redirectTo);
+  }
+
+  const { board, posts } = data;
 
   return (
     <main className="bg-base-200 min-h-screen">
@@ -60,16 +76,16 @@ export default async function PublicFeedbackBoard({ params }) {
       <section className="max-w-5xl mx-auto p-5">
         <h1 className="text-lg font-bold">{board.name} (public)</h1>
       </section>
-      <section className="max-w-5xl mx-auto px-5 py-12 flex flex-col [665px]:flex-row [665px]:justify-between gap-8">
+      <section className="max-w-5xl mx-auto px-5 p flex flex-col  md:flex-row md:items-start gap-8 pb-12">
         <FormAddPost boardId={boardId} />
         {posts.length > 0 ? (
-          <ul className="space-y-5 w-full [665px]:w-auto flex-grow">
+          <ul className="space-y-4 flex-grow">
             {posts.map((post) => (
-              <CardPost key={post._id.toString()} post={post} />
+              <CardPost key={post._id} post={post} />
             ))}
           </ul>
         ) : (
-          <p className="text-gray-500 w-full [665px]:w-auto flex-grow">
+          <p className="text-gray-50 flex-grow">
             No posts yet. Be the first to add one!
           </p>
         )}

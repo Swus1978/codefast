@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -19,6 +19,18 @@ const ButtonVote = ({
   const [upvoteCount, setUpvoteCount] = useState(initialUpvotes);
   const [downvoteCount, setDownvoteCount] = useState(initialDownvotes);
 
+  const upvoteKeyName = `swustechSaaS-upVoted-${postId}`;
+  const downvoteKeyName = `swustechSaaS-downVoted-${postId}`;
+
+  // Check localStorage only on the client side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      // Ensure we're on the client
+      setUpvoted(localStorage.getItem(upvoteKeyName) === "true");
+      setDownvoted(localStorage.getItem(downvoteKeyName) === "true");
+    }
+  }, [upvoteKeyName, downvoteKeyName]); // Dependencies ensure this runs when keys change
+
   const handleUpvote = async () => {
     if (isLoading) return;
 
@@ -30,11 +42,14 @@ const ButtonVote = ({
       setUpvoted(response.data.upvoted);
       setDownvoted(response.data.downvoted);
       toast.success(response.data.message);
+      localStorage.setItem(upvoteKeyName, "true"); // Set on success
+      localStorage.removeItem(downvoteKeyName); // Remove downvote if present
       router.refresh();
     } catch (error) {
       const errorMessage =
         error.response?.data?.error || error.message || "Failed to update vote";
       toast.error(errorMessage);
+      localStorage.setItem(upvoteKeyName, "failed"); // Track failure differently
     } finally {
       setIsLoading(false);
     }
@@ -51,11 +66,14 @@ const ButtonVote = ({
       setUpvoted(response.data.upvoted);
       setDownvoted(response.data.downvoted);
       toast.success(response.data.message);
+      localStorage.setItem(downvoteKeyName, "true"); // Set on success
+      localStorage.removeItem(upvoteKeyName); // Remove upvote if present
       router.refresh();
     } catch (error) {
       const errorMessage =
         error.response?.data?.error || error.message || "Failed to update vote";
       toast.error(errorMessage);
+      localStorage.setItem(downvoteKeyName, "failed"); // Track failure differently
     } finally {
       setIsLoading(false);
     }
@@ -64,10 +82,10 @@ const ButtonVote = ({
   return (
     <div className="flex items-center gap-2">
       <button
-        className={`group border px-4 py-2 text-lg flex flex-col items-center gap-1 rounded-xl transition-all duration-200 ${
+        className={`group border px-4 py-2 text-lg flex flex-col items-center gap-1 rounded-xl transition-all duration-200 ml-5 ${
           upvoted
             ? "bg-primary text-primary-content border-transparent"
-            : "bg-base-100 text-base-content hover:border-base-content/25 hover:bg-base-200"
+            : "bg-base-100 text-base-content hover:border-base-content/25 hover:bg-base-200 hove"
         }`}
         onClick={handleUpvote}
       >
@@ -79,7 +97,7 @@ const ButtonVote = ({
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
               fill="currentColor"
-              className="size-6 transition-transform  group-hover:text-primary group-hover:-translate-y-0.5 duration-200"
+              className="size-6 transition-transform group-hover:text-primary group-hover:-translate-y-0.5 duration-200"
             >
               <path
                 fillRule="evenodd"
@@ -112,7 +130,7 @@ const ButtonVote = ({
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
               fill="currentColor"
-              className="size-6 transition-transform group-hover:translate-y-0.5  group-hover:text-primary duration-200"
+              className="size-6 transition-transform group-hover:translate-y-0.5 group-hover:text-primary duration-200"
             >
               <path
                 fillRule="evenodd"

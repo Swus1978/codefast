@@ -1,74 +1,58 @@
 import Link from "next/link";
 import connectMongo from "@/libs/mongoose";
 import Board from "@/models/Board";
-import Post from "@/models/Post"; // Add Post model
-import { auth } from "@/auth";
+import Post from "@/models/Post";
+import FormAddPost from "@/components/FormAddPost";
+import CardPost from "@/components/CardPost";
 import { redirect } from "next/navigation";
-import CardBoardLink from "@/components/CardBoardLink";
-import ButtonDeleteBoard from "@/components/ButtonDeleteBoard";
-import CardPostAdmin from "@/components/CardPostAdmin";
 
-const getBoardData = async (boardId) => {
+const getData = async (boardId) => {
   if (!boardId) {
-    console.log("No boardId provided, redirecting to dashboard");
-    return null;
+    console.log("No boardId provided");
+    return { redirectTo: "/" };
   }
 
   try {
     await connectMongo();
-    const session = await auth();
-
-    if (!session?.user) {
-      console.log("No session or user, redirecting to login");
-      return redirect("/login");
-    }
-
-    const board = await Board.findOne({
-      _id: boardId,
-      userId: session.user.id,
-    }).lean();
-
+    const board = await Board.findById(boardId).lean();
     if (!board) {
-      console.log(
-        `Board not found for boardId: ${boardId}, redirecting to dashboard`
-      );
-      return null;
+      console.log(`Board not found for boardId: ${boardId}`);
+      return { redirectTo: "/" };
     }
 
     const posts = await Post.find({ boardId }).sort({ createdAt: -1 }).lean();
 
-    console.log(`Board found: ${board.name}, Posts: ${posts.length}`);
-    return { board, posts };
+    const plainBoard = { ...board, _id: board._id.toString() };
+    const plainPosts = posts.map((post) => ({
+      ...post,
+      _id: post._id.toString(),
+      boardId: post.boardId.toString(),
+      createdAt: post.createdAt.toISOString(),
+    }));
+
+    console.log(`Public board found: ${board.name}, Posts: ${posts.length}`);
+    return { board: plainBoard, posts: plainPosts };
   } catch (error) {
-    console.error("Error fetching board data:", error);
-    return null;
+    console.error("Error fetching public board data:", error);
+    return { redirectTo: "/" };
   }
 };
 
-export default async function FeedbackBoard({ params }) {
-  // eslint-disable-next-line @next/next/no-sync-dynamic-apis
-  const boardId = await params.boardId; // Await explicitly to suppress warning
+export default async function PublicFeedbackBoard({ params }) {
+  const boardId = await params.boardId;
+  const data = await getData(boardId);
 
-  if (!boardId) {
-    console.log("No boardId in params, redirecting to dashboard");
-    return redirect("/dashboard");
-  }
-
-  const data = await getBoardData(boardId);
-
-  if (!data) {
-    console.log(`Redirecting to dashboard for boardId: ${boardId}`);
-    return redirect("/dashboard");
+  if (data.redirectTo) {
+    return redirect(data.redirectTo);
   }
 
   const { board, posts } = data;
 
   return (
     <main className="bg-base-200 min-h-screen">
-      {/* Header Section */}
       <section className="bg-base-100">
-        <div className="px-5 py-3 flex max-w-5xl mx-auto">
-          <Link href="/dashboard" className="btn">
+        <div className="max-w-5xl mx-auto px-5 py-3 flex">
+          <Link href="/" className="btn">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
@@ -85,22 +69,26 @@ export default async function FeedbackBoard({ params }) {
           </Link>
         </div>
       </section>
-
-      {/* Content Section */}
-      <section className="max-w-5xl mx-auto px-5 py-12 flex flex-col md:flex-row gap-12">
-        <div className="space-y-8">
-          <h1 className="font-extrabold text-xl mb-4">{board.name}</h1>
-          <CardBoardLink boardId={board._id.toString()} />
-          <ButtonDeleteBoard boardId={board._id.toString()} />
+      <section className="max-w-5xl mx-auto p-5">
+        <h1 className="text-lg font-bold">{board.name} (public)</h1>
+      </section>
+      <section className="max-w-5xl mx-auto px-5 py-12 flex flex-col md:flex-row gap-8">
+        <div className="w-full md:w-1/3">
+          <FormAddPost boardId={boardId} />
         </div>
-
-        {/* Posts List */}
-
-        <ul className="space-y-4 ">
-          {posts.map((post) => (
-            <CardPostAdmin key={post._id.toString()} post={post} />
-          ))}
-        </ul>
+        <div className="w-full md:w-2/3">
+          {posts.length > 0 ? (
+            <ul className="space-y-5">
+              {posts.map((post) => (
+                <CardPost key={post._id} post={post} />
+              ))}
+            </ul>
+          ) : (
+            <p className="text-gray-500">
+              No posts yet. Be the first to add one!
+            </p>
+          )}
+        </div>
       </section>
     </main>
   );
