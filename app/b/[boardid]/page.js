@@ -33,9 +33,7 @@ const getData = async (boardId) => {
 };
 
 export default async function PublicFeedbackBoard({ params }) {
-  // eslint-disable-next-line @next/next/no-sync-dynamic-apis
   const boardId = await params.boardId;
-
   const { board, posts } = await getData(boardId);
 
   return (
@@ -62,16 +60,18 @@ export default async function PublicFeedbackBoard({ params }) {
       <section className="max-w-5xl mx-auto p-5">
         <h1 className="text-lg font-bold">{board.name} (public)</h1>
       </section>
-      <section className="max-w-5xl mx-auto px-5 py-12 flex flex-col md:flex-row items-start gap-8">
+      <section className="max-w-5xl mx-auto px-5 py-12 flex flex-col [665px]:flex-row [665px]:justify-between gap-8">
         <FormAddPost boardId={boardId} />
         {posts.length > 0 ? (
-          <ul className="space-y-5 flex-grow">
+          <ul className="space-y-5 w-full [665px]:w-auto flex-grow">
             {posts.map((post) => (
               <CardPost key={post._id.toString()} post={post} />
             ))}
           </ul>
         ) : (
-          <p className="text-gray-500">Please login first</p>
+          <p className="text-gray-500 w-full [665px]:w-auto flex-grow">
+            No posts yet. Be the first to add one!
+          </p>
         )}
       </section>
     </main>

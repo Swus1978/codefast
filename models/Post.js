@@ -11,6 +11,26 @@ const postSchema = new mongoose.Schema({
     required: true,
     ref: "User",
   },
+  upvotes: {
+    type: Number,
+    default: 0,
+  },
+  downvotes: {
+    type: Number,
+    default: 0,
+  },
+  upvotedBy: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  downvotedBy: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   title: {
     type: String,
     required: true,
