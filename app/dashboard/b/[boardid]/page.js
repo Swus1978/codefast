@@ -1,12 +1,14 @@
 import Link from "next/link";
 import connectMongo from "@/libs/mongoose";
 import Board from "@/models/Board";
+import Post from "@/models/Post"; // Add Post model
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import CardBoardLink from "@/components/CardBoardLink";
 import ButtonDeleteBoard from "@/components/ButtonDeleteBoard";
+import CardPostAdmin from "@/components/CardPostAdmin";
 
-const getBoard = async (boardId) => {
+const getBoardData = async (boardId) => {
   if (!boardId) {
     console.log("No boardId provided, redirecting to dashboard");
     return null;
@@ -16,15 +18,15 @@ const getBoard = async (boardId) => {
     await connectMongo();
     const session = await auth();
 
-    if (!session || !session.user) {
+    if (!session?.user) {
       console.log("No session or user, redirecting to login");
-      return redirect("/login"); // Redirect to login if not authenticated
+      return redirect("/login");
     }
 
     const board = await Board.findOne({
       _id: boardId,
       userId: session.user.id,
-    });
+    }).lean();
 
     if (!board) {
       console.log(
@@ -33,32 +35,37 @@ const getBoard = async (boardId) => {
       return null;
     }
 
-    console.log(`Board found: ${board.name}`);
-    return board;
+    const posts = await Post.find({ boardId }).sort({ createdAt: -1 }).lean();
+
+    console.log(`Board found: ${board.name}, Posts: ${posts.length}`);
+    return { board, posts };
   } catch (error) {
-    console.error("Error fetching board:", error);
+    console.error("Error fetching board data:", error);
     return null;
   }
 };
 
 export default async function FeedbackBoard({ params }) {
   // eslint-disable-next-line @next/next/no-sync-dynamic-apis
-  const boardId = await params.boardId; // Suppress warning if it persists
+  const boardId = await params.boardId; // Await explicitly to suppress warning
 
   if (!boardId) {
     console.log("No boardId in params, redirecting to dashboard");
     return redirect("/dashboard");
   }
 
-  const board = await getBoard(boardId);
+  const data = await getBoardData(boardId);
 
-  if (!board) {
+  if (!data) {
     console.log(`Redirecting to dashboard for boardId: ${boardId}`);
     return redirect("/dashboard");
   }
 
+  const { board, posts } = data;
+
   return (
     <main className="bg-base-200 min-h-screen">
+      {/* Header Section */}
       <section className="bg-base-100">
         <div className="px-5 py-3 flex max-w-5xl mx-auto">
           <Link href="/dashboard" className="btn">
@@ -78,10 +85,22 @@ export default async function FeedbackBoard({ params }) {
           </Link>
         </div>
       </section>
-      <section className="max-w-5xl mx-auto px-5 py-12 space-y-12">
-        <h1 className="font-extrabold text-xl mb-4">{board.name}</h1>
-        <CardBoardLink boardId={board._id.toString()} />
-        <ButtonDeleteBoard boardId={board._id.toString()} />
+
+      {/* Content Section */}
+      <section className="max-w-5xl mx-auto px-5 py-12 flex flex-col md:flex-row gap-12">
+        <div className="space-y-8">
+          <h1 className="font-extrabold text-xl mb-4">{board.name}</h1>
+          <CardBoardLink boardId={board._id.toString()} />
+          <ButtonDeleteBoard boardId={board._id.toString()} />
+        </div>
+
+        {/* Posts List */}
+
+        <ul className="space-y-4 ">
+          {posts.map((post) => (
+            <CardPostAdmin key={post._id.toString()} post={post} />
+          ))}
+        </ul>
       </section>
     </main>
   );

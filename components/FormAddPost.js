@@ -29,7 +29,6 @@ const FormAddPost = ({ boardId }) => {
       setTitle("");
       setDescription("");
       toast.success("Post created successfully");
-
       router.push(`/b/${boardId}`);
     } catch (error) {
       const errorMessage =
@@ -45,12 +44,12 @@ const FormAddPost = ({ boardId }) => {
 
   return (
     <form
-      className="bg-base-100 p-8 rounded-3xl space-y-8 w-full md:max-w-sm shrink-0 md:sticky top-8"
+      className="bg-base-100 p-8 rounded-3xl space-y-8 w-full md:sticky top-8"
       onSubmit={handleSubmit}
     >
       <p className="font-bold text-lg">Suggest a feature</p>
       <label className="form-control w-full">
-        <span className="label-text">Short, descriptive title</span>{" "}
+        <span className="label-text">Short, descriptive title</span>
         <input
           required
           type="text"
@@ -66,7 +65,7 @@ const FormAddPost = ({ boardId }) => {
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="textarea h-24"
+          className="textarea h-24 w-full"
           placeholder="The login button color should be green to match our brand colors."
           maxLength={1000}
         ></textarea>
