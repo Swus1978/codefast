@@ -1,8 +1,10 @@
 import NextAuth from "next-auth";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import mongoClientPromise from "./libs/mongo";
 
-const config = {
+export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Resend({
       apiKey: process.env.RESEND_KEY,
@@ -14,14 +16,12 @@ const config = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
-  adapter: {
-    ...(await import("@auth/mongodb-adapter")).MongoDBAdapter(
-      (await import("./libs/mongo")).default
-    ),
-  },
+  adapter: MongoDBAdapter(mongoClientPromise),
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
-  trustHost: true, // Explicitly trust localhost
-};
-
-export const { handlers, signIn, signOut, auth } = NextAuth(config);
+  callbacks: {
+    async redirect({ url, baseUrl }) {
+      return baseUrl + "/dashboard";
+    },
+  },
+});
