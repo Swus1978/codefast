@@ -1,48 +1,30 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
-import connectMongo from "@/libs/mongoose";
-import User from "@/models/User";
 import Stripe from "stripe";
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(req) {
   try {
-    const { successUrl, cancelUrl } = await req.json();
-    if (!successUrl || !cancelUrl) {
-      return NextResponse.json(
-        { error: "Success and cancel URLs are required" },
-        { status: 400 }
-      );
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY); // Moved here
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("STRIPE_SECRET_KEY is not set");
     }
 
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    await connectMongo();
-    const user = await User.findById(session.user.id);
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
-
-    const stripeCheckoutSession = await stripe.checkout.sessions.create({
-      mode: "subscription",
+    const { userId } = await req.json();
+    // Example checkout session (adjust based on your actual code)
+    const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
         {
-          price: process.env.STRIPE_PRICE_ID,
+          price: "price_1R7UQW2NjqSanNMB7t8ii4AG", // Replace with your Stripe price ID
           quantity: 1,
         },
       ],
-      success_url: successUrl,
-      cancel_url: cancelUrl,
-      customer_email: user.email,
-      client_reference_id: user._id.toString(),
+      mode: "subscription",
+      success_url: `${req.headers.get("origin")}/dashboard`,
+      cancel_url: `${req.headers.get("origin")}/dashboard`,
+      client_reference_id: userId,
     });
 
-    return NextResponse.json({ url: stripeCheckoutSession.url });
+    return NextResponse.json({ url: session.url });
   } catch (error) {
     console.error("Checkout error:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });

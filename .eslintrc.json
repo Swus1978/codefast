@@ -1,6 +1,16 @@
 {
-  "extends": ["next/core-web-vitals", "eslint:recommended"],
+  "extends": ["next/core-web-vitals"],
   "rules": {
-    "no-unused-vars": "warn"
+    "no-unused-vars": "warn",
+    "@next/next/no-sync-dynamic-apis": "off",
+    "no-undef": "error"
+  },
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true
+  },
+  "globals": {
+    "Promise": "readonly"
   }
 }
