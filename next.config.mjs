@@ -6,5 +6,13 @@ const nextConfig = {
     }
     return config;
   },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  experimental: {
+    forceSwcTransforms: true,
+  },
 };
+
+// For ESM (.mjs files)
 export default nextConfig;

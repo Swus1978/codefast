@@ -13,9 +13,7 @@ const FormAddPost = ({ boardId }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (isLoading) return;
-
     setIsLoading(true);
     console.log("Submitting post with title:", title, "boardId:", boardId);
 
@@ -25,7 +23,7 @@ const FormAddPost = ({ boardId }) => {
         description,
       });
       console.log("API response:", response.data);
-      const { post } = response.data;
+      const { post } = response.data; // Line 28: 'post' is defined here
       setTitle("");
       setDescription("");
       toast.success("Post created successfully");

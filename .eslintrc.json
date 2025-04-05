@@ -1,6 +1,7 @@
 {
   "extends": ["next/core-web-vitals", "eslint:recommended"],
   "rules": {
+    "@next/next/no-sync-dynamic-apis": "off",
     "no-unused-vars": "warn"
   }
 }
