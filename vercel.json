@@ -9,6 +9,7 @@
       }
     }
   ],
+  "installCommand": "npm install --force",
   "build": {
     "env": {
       "NODE_ENV": "production",

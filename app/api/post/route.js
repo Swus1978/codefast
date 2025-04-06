@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import connectMongo from "@/libs/mongoose";
 import Post from "@/models/Post";
-import { auth } from "@/auth";
+import { auth } from "@/app/auth";
 
 export async function POST(req) {
   const { searchParams } = new URL(req.url);
