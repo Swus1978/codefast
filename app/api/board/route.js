@@ -1,9 +1,10 @@
 // app/api/board/route.js
 import { NextResponse } from "next/server";
-import { auth } from "@/auth";
+import { auth } from "@/app/auth";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
 import Board from "@/models/Board";
+import mongoose from "@/libs/mongoose";
 
 export async function POST(req) {
   try {

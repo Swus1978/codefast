@@ -1,9 +1,9 @@
 // libs/mongoose.js
 import mongoose from "mongoose";
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGO_URI) {
+if (!MONGODB_URI) {
   throw new Error("MONGO_URI is not defined in environment variables");
 }
 
@@ -19,7 +19,7 @@ async function connectMongo() {
   }
 
   if (!cachedConnection.promise) {
-    cachedConnection.promise = mongoose.connect(MONGO_URI, {
+    cachedConnection.promise = mongoose.connect(MONGODB_URI, {
       bufferCommands: false,
     });
   }

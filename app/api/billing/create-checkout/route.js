@@ -4,6 +4,9 @@ import Stripe from "stripe";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
 
+// test-env.js
+console.log("STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
+
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("STRIPE_SECRET_KEY is not set");
 }

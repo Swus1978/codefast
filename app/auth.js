@@ -3,7 +3,7 @@ import NextAuth from "next-auth";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import clientPromise from "@/app/libs/mongo";
+import clientPromise from "@/libs/mongo";
 
 const config = {
   providers: [
@@ -13,12 +13,13 @@ const config = {
       name: "Email",
     }),
     Google({
-      clientId: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
   ],
   adapter: MongoDBAdapter(clientPromise),
   secret: process.env.AUTH_SECRET,
+  trustHost: true,
   debug: process.env.NODE_ENV === "development",
 };
 

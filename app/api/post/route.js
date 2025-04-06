@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { Filter } from "bad-words";
 import connectMongo from "@/libs/mongoose";
 import Post from "@/models/Post";
-import { auth } from "@/auth";
+import { auth } from "@/app/auth";
 
 export async function POST(req) {
   try {

@@ -1,13 +1,11 @@
-
-import { auth } from "@/auth";
-import {redirect} from "next/navigation";
+import { auth } from "@/app/auth";
+import { redirect } from "next/navigation";
 
 export default async function LayoutPrivate({ children }) {
-    const session = await auth();
+  const session = await auth();
 
-    if (!session) {
-        redirect("/");
-    }
-    return children;
-
+  if (!session) {
+    redirect("/");
+  }
+  return children;
 }

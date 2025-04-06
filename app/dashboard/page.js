@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ButtonLogout from "@/components/ButtonLogout";
 import FormNewBoard from "@/components/FormNewBoard";
-import { auth } from "@/auth";
+import { auth } from "@/app/auth";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
 import ButtonCheckout from "@/components/ButtonCheckout";
