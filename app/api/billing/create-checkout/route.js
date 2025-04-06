@@ -10,17 +10,21 @@ export async function POST(req) {
   const session = await auth();
   if (!session) return new Response("Unauthorized", { status: 401 });
 
+  const { successUrl, cancelUrl } = await req.json();
+
   const checkoutSession = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     line_items: [
       {
-        price: "price_1R7oZR2NjqSanNMBeMp4jXsJ", // Replace with your Stripe price ID
+        price: "price_1R7oZR2NjqSanNMBeMp4jXsJ",
         quantity: 1,
       },
     ],
     mode: "subscription",
-    success_url: `${req.headers.get("origin")}/dashboard?success=true`,
-    cancel_url: `${req.headers.get("origin")}/dashboard?canceled=true`,
+    success_url:
+      successUrl || `${req.headers.get("origin")}/dashboard?success=true`,
+    cancel_url:
+      cancelUrl || `${req.headers.get("origin")}/dashboard?canceled=true`,
     customer_email: session.user.email,
   });
 
