@@ -31,5 +31,7 @@ export async function POST(req) {
   await User.findByIdAndUpdate(session.user.id, {
     customerId: checkoutSession.customer,
   });
-  return Response.json({ id: checkoutSession.id });
+
+  // ✅ This is the correct return:
+  return Response.json({ url: checkoutSession.url });
 }
