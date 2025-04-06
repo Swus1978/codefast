@@ -7,13 +7,12 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      maxlength: 100,
     },
     description: {
+      // Added to match your route
       type: String,
-      required: true,
-      trim: true,
-      maxlength: 1000,
+      trim: true, // Optional: trim whitespace
+      default: "", // Optional: default to empty string if not provided
     },
     boardId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -24,10 +23,30 @@ const postSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    upvotedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
+    downvotedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
+    ],
+    upvotes: {
+      type: Number,
+      default: 0,
+    },
+    downvotes: {
+      type: Number,
+      default: 0,
+    },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 export default mongoose.models.Post || mongoose.model("Post", postSchema);

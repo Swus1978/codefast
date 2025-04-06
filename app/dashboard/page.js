@@ -1,9 +1,11 @@
+// app/dashboard/page.js
 import Link from "next/link";
 import ButtonLogout from "@/components/ButtonLogout";
 import FormNewBoard from "@/components/FormNewBoard";
 import { auth } from "@/app/auth";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
+import "@/models/Board"; // Import to register the Board model
 import ButtonCheckout from "@/components/ButtonCheckout";
 
 async function getUser() {

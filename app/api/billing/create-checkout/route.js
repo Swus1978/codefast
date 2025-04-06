@@ -1,68 +1,31 @@
-import { NextResponse } from "next/server";
-import { headers } from "next/headers";
-import Stripe from "stripe";
+import { auth } from "@/app/auth";
 import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
+import Stripe from "stripe";
 
-// test-env.js
-console.log("STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
-
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("STRIPE_SECRET_KEY is not set");
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
-});
-
-export const dynamic = "force-dynamic"; // Skip prerendering for this route
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(req) {
-  try {
-    const body = await req.text();
-    const signature = headers().get("stripe-signature");
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  await connectMongo();
+  const session = await auth();
+  if (!session) return new Response("Unauthorized", { status: 401 });
 
-    if (!webhookSecret) {
-      throw new Error("STRIPE_WEBHOOK_SECRET is not set");
-    }
+  const checkoutSession = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    line_items: [
+      {
+        price: "price_1R7oZR2NjqSanNMBeMp4jXsJ", // Replace with your Stripe price ID
+        quantity: 1,
+      },
+    ],
+    mode: "subscription",
+    success_url: `${req.headers.get("origin")}/dashboard?success=true`,
+    cancel_url: `${req.headers.get("origin")}/dashboard?canceled=true`,
+    customer_email: session.user.email,
+  });
 
-    const event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      webhookSecret
-    );
-    const { data, type } = event;
-
-    await connectMongo();
-
-    if (type === "checkout.session.completed") {
-      const user = await User.findById(data.object.client_reference_id);
-      if (!user) {
-        console.error(
-          "User not found for ID:",
-          data.object.client_reference_id
-        );
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
-      user.hasAccess = true;
-      user.customerId = data.object.customer;
-      await user.save();
-      console.log("User updated with hasAccess: true", user._id);
-    } else if (type === "customer.subscription.deleted") {
-      const user = await User.findOne({ customerId: data.object.customer });
-      if (!user) {
-        console.error("User not found for customer:", data.object.customer);
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
-      user.hasAccess = false;
-      await user.save();
-      console.log("User updated with hasAccess: false", user._id);
-    }
-
-    return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error("Webhook error:", error.message);
-    return NextResponse.json({ error: error.message }, { status: 400 });
-  }
+  await User.findByIdAndUpdate(session.user.id, {
+    customerId: checkoutSession.customer,
+  });
+  return Response.json({ id: checkoutSession.id });
 }
