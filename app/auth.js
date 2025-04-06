@@ -1,6 +1,9 @@
+// app/auth.js
 import NextAuth from "next-auth";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import clientPromise from "@/app/libs/mongo";
 
 const config = {
   providers: [
@@ -10,18 +13,13 @@ const config = {
       name: "Email",
     }),
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      clientId: process.env.GOOGLE_ID,
+      clientSecret: process.env.GOOGLE_SECRET,
     }),
   ],
-  adapter: {
-    ...(await import("@auth/mongodb-adapter")).MongoDBAdapter(
-      (await import("./libs/mongo")).default
-    ),
-  },
-  secret: process.env.NEXTAUTH_SECRET,
+  adapter: MongoDBAdapter(clientPromise),
+  secret: process.env.AUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
-  trustHost: true, // Explicitly trust localhost
 };
 
 export const { handlers, signIn, signOut, auth } = NextAuth(config);
