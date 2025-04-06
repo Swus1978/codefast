@@ -34,7 +34,7 @@ const getData = async (boardId) => {
 
 export default async function PublicFeedbackBoard({ params }) {
   // eslint-disable-next-line @next/next/no-sync-dynamic-apis
-  const boardId = await params.boardId;
+  const boardId = await params?.boardId;
 
   const { board, posts } = await getData(boardId);
 
@@ -46,7 +46,7 @@ export default async function PublicFeedbackBoard({ params }) {
       <section className="max-w-5xl mx-auto px-5 flex flex-col md:flex-row  items-start gap-8 pd-12">
         <FormAddPost boardId={boardId} />
         {posts.length > 0 && (
-          <ul className="space-y-5 flex-grow">
+          <ul className="space-y-5 flex-grow ">
             {posts.map((post) => (
               <li key={post._id.toString()}>
                 <CardPost key={post._id} post={post} />

@@ -19,7 +19,13 @@ const FormNewBoard = () => {
     try {
       const response = await axios.post("/api/board", { name });
       console.log("API response:", response.data);
-      const { board } = response.data;
+
+      const board = response.data; // ✅ Changed this line
+
+      if (!board?._id) {
+        throw new Error("Board creation failed: Missing _id");
+      }
+
       setName("");
       toast.success("Board created successfully");
       router.push(`/dashboard/b/${board._id}`);
