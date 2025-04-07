@@ -18,6 +18,7 @@ const config = {
   ],
   adapter: MongoDBAdapter(clientPromise),
   secret: process.env.AUTH_SECRET,
+  debug: true,
   trustHost: true,
   debug: process.env.NODE_ENV === "development",
 };
