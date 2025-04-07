@@ -11,6 +11,7 @@ const nextConfig = {
   },
   experimental: {
     forceSwcTransforms: true,
+    cpus: 1, // Limit build process to 1 CPU core
   },
 };
 
