@@ -1,7 +1,6 @@
 import { MongoClient, ServerApiVersion } from "mongodb";
 
 // Disable SSL verification (NOT recommended for production)
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 // Validate environment variable
 if (!process.env.MONGODB_URI) {
