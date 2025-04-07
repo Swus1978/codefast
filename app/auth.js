@@ -18,16 +18,19 @@ const config = {
   ],
   adapter: MongoDBAdapter(clientPromise),
   secret: process.env.AUTH_SECRET,
-  debug: true,
-  trustHost: true,
-  debug: process.env.NODE_ENV === "development",
+  debug: process.env.NODE_ENV === "development", // Keep this one
+  trustHost: true, // For Vercel
+  callbacks: {
+    async redirect({ url, baseUrl }) {
+      return baseUrl + "/dashboard"; // Ensure redirect works post-login
+    },
+  },
 };
 
 // Default export for Next.js API route
 const handler = NextAuth(config);
 
-// If you're relying on your custom handlers, we can export them here
 export { handler as GET, handler as POST };
 
-// Custom signIn and signOut logic if needed
+// Optional: Export custom helpers if used elsewhere
 export const { signIn, signOut, auth, handlers } = NextAuth(config);
