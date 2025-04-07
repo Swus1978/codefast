@@ -1,4 +1,3 @@
-// app/auth.js
 import NextAuth from "next-auth";
 import Resend from "next-auth/providers/resend";
 import Google from "next-auth/providers/google";
@@ -25,4 +24,11 @@ const config = {
   debug: process.env.NODE_ENV === "development",
 };
 
-export const { handlers, signIn, signOut, auth } = NextAuth(config);
+// Default export for Next.js API route
+const handler = NextAuth(config);
+
+// If you're relying on your custom handlers, we can export them here
+export { handler as GET, handler as POST };
+
+// Custom signIn and signOut logic if needed
+export const { signIn, signOut, auth, handlers } = NextAuth(config);
