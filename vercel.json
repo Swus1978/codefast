@@ -5,7 +5,7 @@
   "outputDirectory": ".next",
   "framework": "nextjs",
   "functions": {
-    "api/auth/*": {
+    "app/auth/*": {
       "maxDuration": 300
     }
   }
