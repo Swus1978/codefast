@@ -21,6 +21,8 @@ async function connectMongo() {
         bufferCommands: false,
         connectTimeoutMS: 5000, // Fail after 5s
         serverSelectionTimeoutMS: 5000, // Faster server selection
+        ssl: true,
+        tlsAllowInvalidCertificates: false,
       })
       .catch((err) => {
         cachedConnection.promise = null;
