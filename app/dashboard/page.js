@@ -48,9 +48,6 @@ export default async function Dashboard() {
     <main className="bg-base-200 min-h-screen">
       <section className="bg-base-100 sticky top-0 z-10 shadow-sm">
         <div className="px-5 py-3 flex justify-between items-center max-w-5xl mx-auto">
-          <div className="flex items-center space-x-4">
-            <h1 className="font-bold text-lg">My Dashboard</h1>
-          </div>
           <div className="flex items-center space-x-3">
             {user.hasAccess ? (
               <>
