@@ -20,16 +20,15 @@ const FormNewBoard = () => {
       const response = await axios.post("/api/board", { name });
       console.log("API response:", response.data);
 
-      const board = response.data; // ✅ Changed this line
-
-      if (!board?._id) {
-        throw new Error("Board creation failed: Missing _id");
+      const { success, board } = response.data; // Destructure the response
+      if (!success || !board?._id) {
+        throw new Error("Board creation failed: Missing _id or success false");
       }
 
       setName("");
       toast.success("Board created successfully");
-      router.push(`/dashboard/b/${board._id}`);
-      console.log("Navigating to:", `/dashboard/b/${board._id}`);
+      router.refresh(); // Refresh dashboard
+      console.log("Dashboard refreshed");
     } catch (error) {
       const errorMessage =
         error.response?.data?.error ||
