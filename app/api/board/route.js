@@ -26,6 +26,14 @@ export async function POST(req) {
     await connectMongo();
 
     const user = await User.findById(session.user.id);
+
+    if (!user.hasAccess) {
+      return NextResponse.json(
+        { error: "Please subscribe to use this feature" },
+        { status: 403 }
+      );
+    }
+
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
@@ -87,6 +95,14 @@ export async function DELETE(req) {
     await connectMongo();
 
     const user = await User.findById(session.user.id);
+
+    if (!user.hasAccess) {
+      return NextResponse.json(
+        { error: "Please subscribe to use this feature" },
+        { status: 403 }
+      );
+    }
+
     if (!user) {
       return NextResponse.json(
         { success: false, error: "User not found" },
