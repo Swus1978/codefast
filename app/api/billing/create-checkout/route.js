@@ -3,35 +3,44 @@ import connectMongo from "@/libs/mongoose";
 import User from "@/models/User";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 export async function POST(req) {
-  await connectMongo();
-  const session = await auth();
-  if (!session) return new Response("Unauthorized", { status: 401 });
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-  const { successUrl, cancelUrl } = await req.json();
+  try {
+    await connectMongo();
+    const session = await auth();
+    if (!session) throw new Error("Unauthorized");
 
-  const checkoutSession = await stripe.checkout.sessions.create({
-    payment_method_types: ["card"],
-    line_items: [
-      {
-        price: "price_1R7oZR2NjqSanNMBeMp4jXsJ",
-        quantity: 1,
-      },
-    ],
-    mode: "subscription",
-    success_url:
-      successUrl || `${req.headers.get("origin")}/dashboard?success=true`,
-    cancel_url:
-      cancelUrl || `${req.headers.get("origin")}/dashboard?canceled=true`,
-    customer_email: session.user.email,
-  });
+    const { successUrl, cancelUrl } = await req.json();
+    const user = await User.findById(session.user.id);
+    if (!user) throw new Error("User not found");
 
-  await User.findByIdAndUpdate(session.user.id, {
-    customerId: checkoutSession.customer,
-  });
+    if (!user.customerId) {
+      const customer = await stripe.customers.create({
+        email: session.user.email,
+      });
+      await User.updateOne(
+        { _id: session.user.id },
+        { $set: { customerId: customer.id } }
+      );
+      console.log("Customer created:", customer.id);
+    }
 
-  // ✅ This is the correct return:
-  return Response.json({ url: checkoutSession.url });
+    const checkoutSession = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [{ price: "price_1R7oZR2NjqSanNMBeMp4jXsJ", quantity: 1 }],
+      mode: "subscription",
+      customer: user.customerId,
+      success_url:
+        successUrl || `${req.headers.get("origin")}/dashboard/success`,
+      cancel_url:
+        cancelUrl || `${req.headers.get("origin")}/dashboard?canceled=true`,
+    });
+
+    console.log("Checkout URL:", checkoutSession.url);
+    return Response.json({ url: checkoutSession.url });
+  } catch (error) {
+    console.error("Checkout error:", error.message);
+    return Response.json({ error: error.message }, { status: 500 });
+  }
 }
