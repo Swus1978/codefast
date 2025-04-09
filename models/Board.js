@@ -1,18 +1,19 @@
-
 import mongoose from "mongoose";
 
-const boardSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: "User",
+const BoardSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-});
+  { timestamps: true } // Adds createdAt and updatedAt
+);
 
-export default mongoose.models.Board || mongoose.model("Board", boardSchema);
-
+export default mongoose.models.Board || mongoose.model("Board", BoardSchema);

@@ -18,7 +18,7 @@ const getBoard = async (boardId) => {
 
     if (!session || !session.user) {
       console.log("No session or user, redirecting to login");
-      return redirect("/login"); // Redirect to login if not authenticated
+      return redirect("/login");
     }
 
     const board = await Board.findOne({
@@ -42,8 +42,7 @@ const getBoard = async (boardId) => {
 };
 
 export default async function FeedbackBoard({ params }) {
-  // eslint-disable-next-line @next/next/no-sync-dynamic-apis
-  const boardId = await params.boardId; // Suppress warning if it persists
+  const boardId = params?.boardId; // No await, params is an object
 
   if (!boardId) {
     console.log("No boardId in params, redirecting to dashboard");
@@ -56,9 +55,9 @@ export default async function FeedbackBoard({ params }) {
     console.log(`Redirecting to dashboard for boardId: ${boardId}`);
     return redirect("/dashboard");
   }
+
   return (
     <main className="bg-base-200 min-h-screen">
-      {/* HEADER */}
       <section className="bg-base-100">
         <div className="px-5 py-3 flex max-w-5xl mx-auto">
           <Link href={"/dashboard"} className="btn">
@@ -83,7 +82,6 @@ export default async function FeedbackBoard({ params }) {
           {board ? `${board.name}` : "Board Not Found"}
         </h1>
         <CardBoardLink boardId={board._id.toString()} />
-
         <ButtonDeleteBoard boardId={board._id.toString()} />
       </section>
     </main>
