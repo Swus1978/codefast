@@ -1,39 +1,42 @@
 "use client";
 
-import axios from "axios";
 import { useState } from "react";
+import axios from "axios";
 import toast from "react-hot-toast";
 
-const ButtonCheckout = () => {
+export default function ButtonCheckout() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubscribe = async () => {
+  const handleCheckout = async () => {
     if (isLoading) return;
-
-    console.log("Subscribe clicked");
     setIsLoading(true);
+
     try {
       const response = await axios.post("/api/billing/create-checkout", {
-        successUrl: `${window.location.origin}/dashboard/success`,
-        cancelUrl: window.location.href,
+        successUrl: `${window.location.origin}/dashboard/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/dashboard?canceled=true`,
       });
       console.log("Stripe response:", response.data);
-      const redirectUrl = response.data.url;
-      if (!redirectUrl) throw new Error("No redirect URL in response");
-      console.log("Redirecting to:", redirectUrl);
-      window.location.href = redirectUrl; // Should redirect here
+
+      if (response.data.url) {
+        window.location.href = response.data.url; // Redirect to Stripe checkout
+      } else {
+        throw new Error("No checkout URL received");
+      }
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.error || error.message || "Something went wrong";
-      console.error("Checkout error:", errorMessage);
-      toast.error(errorMessage);
+      console.error("Checkout error:", error);
+      toast.error(error.message || "Failed to initiate checkout");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <button className="btn btn-primary" onClick={handleSubscribe}>
+    <button
+      className="btn btn-primary"
+      onClick={handleCheckout}
+      disabled={isLoading}
+    >
       {isLoading ? (
         <span className="loading loading-spinner loading-xs"></span>
       ) : (
@@ -41,6 +44,4 @@ const ButtonCheckout = () => {
       )}
     </button>
   );
-};
-
-export default ButtonCheckout;
+}
