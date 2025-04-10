@@ -26,19 +26,31 @@ export async function POST(req) {
       console.log("Customer created:", customer.id);
     }
 
+    const successUrlWithSession =
+      successUrl ||
+      `${req.headers.get(
+        "origin"
+      )}/dashboard/success?session_id={CHECKOUT_SESSION_ID}`;
+    console.log("Success URL configured:", successUrlWithSession);
+
     const checkoutSession = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [{ price: "price_1R7oZR2NjqSanNMBeMp4jXsJ", quantity: 1 }],
       mode: "subscription",
       customer: user.customerId,
-      success_url:
-        successUrl || `${req.headers.get("origin")}/dashboard/success`,
+      success_url: successUrlWithSession,
       cancel_url:
         cancelUrl || `${req.headers.get("origin")}/dashboard?canceled=true`,
     });
 
-    console.log("Checkout URL:", checkoutSession.url);
-    return Response.json({ url: checkoutSession.url });
+    console.log("Checkout session created:", {
+      id: checkoutSession.id,
+      url: checkoutSession.url,
+    });
+    return Response.json({
+      url: checkoutSession.url,
+      sessionId: checkoutSession.id,
+    });
   } catch (error) {
     console.error("Checkout error:", error.message);
     return Response.json({ error: error.message }, { status: 500 });

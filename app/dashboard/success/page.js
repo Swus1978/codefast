@@ -1,38 +1,60 @@
 "use client";
-import { useEffect } from "react";
+
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function SuccessPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session_id");
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const testCreatePortal = async () => {
+    console.log("Success page loaded, sessionId:", sessionId);
+
+    if (!sessionId) {
+      console.error("No session ID found in URL");
+      toast.error("No session ID found");
+      router.push("/dashboard");
+      return;
+    }
+
+    const verifyPayment = async () => {
       try {
-        const res = await fetch("/api/billing/create-portal", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            returnUrl: "http://localhost:3000/dashboard", // change if you're deployed
-          }),
+        console.log("Verifying payment with sessionId:", sessionId);
+        const response = await axios.post("/api/billing/verify-checkout", {
+          sessionId,
         });
+        console.log("Verify response:", response.data);
 
-        const data = await res.json();
-        console.log("Stripe Portal Response:", data);
-
-        if (data.url) {
-          // Redirect to portal if available
-          window.location.href = data.url;
+        if (response.data.success) {
+          toast.success("Payment verified!");
+          router.push("/dashboard");
         } else {
-          console.warn("No URL returned from portal creation");
+          throw new Error(response.data.error || "Payment verification failed");
         }
-      } catch (err) {
-        console.error("Failed to create portal session:", err);
+      } catch (error) {
+        console.error("Verification error:", error.message);
+        toast.error(error.message || "Failed to verify payment");
+        router.push("/dashboard");
+      } finally {
+        setLoading(false);
       }
     };
 
-    testCreatePortal();
-  }, []);
+    verifyPayment();
+  }, [sessionId, router]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center">
-      <p className="text-lg font-semibold">Processing your subscription...</p>
+    <main className="bg-base-200 min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="font-extrabold text-2xl mb-4">
+          {loading ? "Verifying Payment..." : "Payment Successful!"}
+        </h1>
+        <p>{loading ? "Please wait..." : "Redirecting to dashboard..."}</p>
+      </div>
     </main>
   );
 }
